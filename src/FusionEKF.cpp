@@ -48,6 +48,7 @@ FusionEKF::FusionEKF() {
          1, 1, 1, 1;
 
   //TODO: SET THE PROCESS AND MEASUREMENT NOISES
+  // process noise covariance matrix is Q
   //does this go here?
   noise_ax = 9.0;
   noise_ay = 9.0;
@@ -86,6 +87,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     previous_timestamp_ = measurement_pack.timestamp_;
 
+    ekf_.Init(VectorXd(4), MatrixXd(4,4), MatrixXd(4,4),
+              MatrixXd(2,4), MatrixXd(2,2), MatrixXd(4,4));
+
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       /**
       Convert radar from polar to cartesian coordinates and initialize state.
@@ -97,7 +101,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       float px = ro * cos(phi);
       float py = ro * sin(phi);
 
-      //TODO: do i need to add velocity? probably....
+      //TODO: do i need to add velocity? probably....?
 
 
       ekf_.x_ << px, py, 0, 0;
@@ -133,15 +137,14 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   previous_timestamp_ = measurement_pack.timestamp_;
 
   //1. Modify the F matrix so that the time is integrated
-  kf_.F_(0,2) = dt;
-  kf_.F_(1,3) = dt;
+  ekf_.F_(0,2) = dt;
+  ekf_.F_(1,3) = dt;
   //2. Set the process covariance matrix Q
-  kf_.Q_ = MatrixXd(4,4);
   float dt2 = dt * dt;
   float dt3 = dt2 * dt * 0.5;
   float dt4 = dt3 * dt * 0.5;
 
-  kf_.Q_ << dt4 * noise_ax, 0, dt3 * noise_ax, 0,
+  ekf_.Q_ << dt4 * noise_ax, 0, dt3 * noise_ax, 0,
             0, dt4 * noise_ay, 0, dt3 * noise_ay,
             dt3 * noise_ax, 0, dt2 * noise_ax, 0,
             0, dt3 * noise_ay, 0, dt2 * noise_ay;
@@ -160,9 +163,23 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
+    //TODO: DO I NEED TO CHANGE THE SIZE OF THESE FIRST?
+//    ekf_.R_ = MatrixXd(3, 3);
+//    ekf_.H_ = MatrixXd(3, 4);
+
+    //TODO: CHECK PX*PX + PY*PY CLOSE TO ZERO?
+
+    Hj_ = tools.CalculateJacobian(ekf_.x_);
+    ekf_.R_ = R_radar_;
+    ekf_.H_ = Hj_;
+
     ekf_.UpdateEKF(measurement_pack);
+
   } else {
     // Laser updates
+    ekf_.R_ = R_laser_;
+    ekf_.H_ = H_laser_;
+
     ekf_.Update(measurement_pack);
   }
 

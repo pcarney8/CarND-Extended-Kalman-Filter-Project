@@ -1,5 +1,6 @@
 #include "kalman_filter.h"
 
+using namespace std;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
@@ -32,14 +33,13 @@ void KalmanFilter::Update(const VectorXd &z) {
   TODO:
     * update the state by using Kalman Filter equations
   */
-    VectorXd z = measurements[n];
     MatrixXd y = z - H_*x_;
     MatrixXd H_t = H_.transpose();
     MatrixXd S = H_*P_*H_t + R_;
     MatrixXd K = P_*H_t*S.inverse();
     MatrixXd I = MatrixXd::Identity(2, 2);
     x_ = x_ + (K*y);
-    P = (I - (K*H_))*P_;
+    P_ = (I - (K*H_))*P_;
 
 }
 
@@ -48,4 +48,29 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   TODO:
     * update the state by using Extended Kalman Filter equations
   */
+  //TODO: CONVERT MEASUREMENT
+    float px = x_[0];
+    float py = x_[1];
+    float vx = x_[2];
+    float vy = x_[3];
+
+    float sqrtpx2py2 = sqrt(px*px + py*py);
+    float pxvxpyvy = px*vx + py*vy;
+
+    //TODO: NORMALIZE ATAN2() AND z[1]
+    VectorXd h = VectorXd(3);
+    h << sqrtpx2py2, atan2(py/px), pxvxpyvy/sqrtpx2py2;
+
+    MatrixXd y = z - h;
+
+  //H_ is Hj_ here
+    MatrixXd H_t = H_.transpose();
+    MatrixXd S = H_*P_*H_t + R_;
+    MatrixXd K = P_*H_t*S.inverse();
+
+    //TODO: VERIFY THIS ID MATRIX IS THE CORRECT SIZE, might be 3x3?
+    MatrixXd I = MatrixXd::Identity(2, 2);
+
+    x_ = x_ + (K*y);
+    P_ = (I - (K*H_))*P_;
 }
