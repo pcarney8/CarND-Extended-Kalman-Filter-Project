@@ -5,6 +5,7 @@
 
 class MeasurementPackage {
 public:
+// TODO: MAKE SURE THIS IS SUPPOSED TO SAY long TWICE
   long long timestamp_;
 
   enum SensorType{

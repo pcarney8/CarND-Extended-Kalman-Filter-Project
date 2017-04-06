@@ -22,6 +22,9 @@ void KalmanFilter::Predict() {
   TODO:
     * predict the state
   */
+  //TODO: where is this u value coming from? are we assuming it's always zero?
+    x_ = (F_*x_) + u;
+    P_ = F_*P_*F_.transpose() + Q_;
 }
 
 void KalmanFilter::Update(const VectorXd &z) {
@@ -29,6 +32,15 @@ void KalmanFilter::Update(const VectorXd &z) {
   TODO:
     * update the state by using Kalman Filter equations
   */
+    VectorXd z = measurements[n];
+    MatrixXd y = z - H_*x_;
+    MatrixXd H_t = H_.transpose();
+    MatrixXd S = H_*P_*H_t + R_;
+    MatrixXd K = P_*H_t*S.inverse();
+    MatrixXd I = MatrixXd::Identity(2, 2);
+    x_ = x_ + (K*y);
+    P = (I - (K*H_))*P_;
+
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
