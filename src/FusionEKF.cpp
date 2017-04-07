@@ -61,32 +61,26 @@ FusionEKF::~FusionEKF() {}
 
 void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
-
   /*****************************************************************************
    *  Initialization
    ****************************************************************************/
   if (!is_initialized_) {
-    cout << "Initialization" << endl;
-
     /**
     TODO:
       * Initialize the state ekf_.x_ with the first measurement.
-      *
-      * Create the covariance matrix. <-- are we talking about Q here?,
-      * and why are we creating it in the initialize block? this might just be initializing
-      * the ekf_.Init(...) function
-      *
+      * Create the covariance matrix.
       * Remember: you'll need to convert radar from polar to cartesian coordinates.
     */
 
-    // first measurement
-    cout << "EKF: " << endl;
+    cout << "Initializing EKF..." << endl;
 
+    // first measurement
     ekf_.x_ = VectorXd(4);
     ekf_.x_ << 1, 1, 1, 1;
 
     previous_timestamp_ = measurement_pack.timestamp_;
 
+    // create covariance matrices
     ekf_.Init(VectorXd(4), MatrixXd(4,4), MatrixXd(4,4),
               MatrixXd(2,4), MatrixXd(2,2), MatrixXd(4,4));
 
@@ -94,15 +88,14 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       /**
       Convert radar from polar to cartesian coordinates and initialize state.
       */
-      float ro = measurement_pack[0];
+      cout << "first measurement is RADAR" << endl;
+      float rho = measurement_pack[0];
       float phi = measurement_pack[1];
+      float rho_dot = measurement_pack[2];
 
-      //TODO: do i need to limit this between -pi and pi here?
-      float px = ro * cos(phi);
-      float py = ro * sin(phi);
-
-      //TODO: do i need to add velocity? probably....?
-
+      cout << "convert to cartesian" << endl;
+      float px = rho * cos(phi);
+      float py = rho * sin(phi);
 
       ekf_.x_ << px, py, 0, 0;
     }
@@ -110,10 +103,16 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       /**
       Initialize state.
       */
+      cout << "first measurement is LIDAR" << endl;
       //Laser doesn't have velocity, only position?
       //velocity is zero because it's the first measurement and we don't have another time value, right?
       ekf_.x_ << measurement_pack[0], measurement_pack[1], 0, 0;
     }
+
+    cout << "px: " << ekf_.x_[0] << endl;
+    cout << "py: " << ekf_.x_[1] << endl;
+    cout << "vx: " << ekf_.x_[2] << endl;
+    cout << "vy: " << ekf_.x_[3] << endl;
 
     // done initializing, no need to predict or update
     is_initialized_ = true;
@@ -132,14 +131,15 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
    */
 
-  //compute the time elapsed between the current and previous measurements
+  cout << "compute the time elapsed between the current and previous measurements" << endl;
   float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
   previous_timestamp_ = measurement_pack.timestamp_;
 
-  //1. Modify the F matrix so that the time is integrated
+  cout << "update the state transition matrix F with new elapsed time" << endl;
   ekf_.F_(0,2) = dt;
   ekf_.F_(1,3) = dt;
-  //2. Set the process covariance matrix Q
+
+  cout << "update process covariance matrix Q" << endl;
   float dt2 = dt * dt;
   float dt3 = dt2 * dt * 0.5;
   float dt4 = dt3 * dt * 0.5;
@@ -162,12 +162,14 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    */
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
-    // Radar updates
+    cout << "Radar updates" << endl;
     //TODO: DO I NEED TO CHANGE THE SIZE OF THESE FIRST?
 //    ekf_.R_ = MatrixXd(3, 3);
 //    ekf_.H_ = MatrixXd(3, 4);
 
     //TODO: CHECK PX*PX + PY*PY CLOSE TO ZERO?
+    //doing this in the calculate jacobian method,
+    //does it need to be here too?
 
     Hj_ = tools.CalculateJacobian(ekf_.x_);
     ekf_.R_ = R_radar_;
@@ -176,7 +178,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     ekf_.UpdateEKF(measurement_pack);
 
   } else {
-    // Laser updates
+    cout << "Laser updates" << endl;
     ekf_.R_ = R_laser_;
     ekf_.H_ = H_laser_;
 
