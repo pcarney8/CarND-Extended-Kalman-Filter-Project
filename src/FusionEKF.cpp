@@ -36,6 +36,9 @@ FusionEKF::FusionEKF() {
     * Finish initializing the FusionEKF.
     * Set the process and measurement noises
   */
+  // create covariance matrices
+  ekf_.Init(VectorXd(4), MatrixXd(4,4), MatrixXd(4,4),
+            MatrixXd(2,4), MatrixXd(2,2), MatrixXd(4,4));
 
   //Initialize the H matrix for laser
   H_laser_ << 1, 0, 0, 0
@@ -47,9 +50,7 @@ FusionEKF::FusionEKF() {
          1, 1, 0, 0,
          1, 1, 1, 1;
 
-  //TODO: SET THE PROCESS AND MEASUREMENT NOISES
-  // process noise covariance matrix is Q
-  //does this go here?
+  //set acceleration noise
   noise_ax = 9.0;
   noise_ay = 9.0;
 }
@@ -79,10 +80,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     ekf_.x_ << 1, 1, 1, 1;
 
     previous_timestamp_ = measurement_pack.timestamp_;
-
-    // create covariance matrices
-    ekf_.Init(VectorXd(4), MatrixXd(4,4), MatrixXd(4,4),
-              MatrixXd(2,4), MatrixXd(2,2), MatrixXd(4,4));
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       /**
