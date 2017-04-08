@@ -41,7 +41,7 @@ FusionEKF::FusionEKF() {
             MatrixXd(2,4), MatrixXd(2,2), MatrixXd(4,4));
 
   //Initialize the H matrix for laser
-  H_laser_ << 1, 0, 0, 0
+  H_laser_ << 1, 0, 0, 0,
               0, 1, 0, 0;
 
   //Initialize the H jacobian
