@@ -2,6 +2,7 @@
 #include "tools.h"
 #include <math.h>
 
+using namespace std;
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
 using std::vector;
