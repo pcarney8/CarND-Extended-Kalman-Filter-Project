@@ -22,12 +22,10 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
 
 void KalmanFilter::Predict() {
   /**
-  TODO:
     * predict the state
   */
-  cout << "Predict..." << endl;
-  //TODO: where is this u value coming from? are we assuming it's always zero?
-    x_ = (F_*x_); // + u;
+    cout << "Predict..." << endl;
+    x_ = (F_*x_);
     P_ = F_*P_*F_.transpose() + Q_;
 }
 
