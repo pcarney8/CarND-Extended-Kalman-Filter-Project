@@ -37,8 +37,11 @@ FusionEKF::FusionEKF() {
     * Set the process and measurement noises
   */
   // create covariance matrices
-  ekf_.Init(VectorXd(4), MatrixXd(4,4), MatrixXd(4,4),
-            MatrixXd(2,4), MatrixXd(2,2), MatrixXd(4,4));
+
+  x_ = VectorXd(4);
+  P_ = MatrixXd(4,4);
+  F_ = MatrixXd(4,4);
+  Q_ = MatrixXd(4,4));
 
   //Initialize the H matrix for laser
   H_laser_ << 1, 0, 0, 0,
@@ -86,6 +89,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       Convert radar from polar to cartesian coordinates and initialize state.
       */
       cout << "first measurement is RADAR" << endl;
+
+      ekf_.Init(x_, P_, F_, Hj_, R_radar_, Q_);
+
       float rho = measurement_pack.raw_measurements_[0];
       float phi = measurement_pack.raw_measurements_[1];
       float rho_dot = measurement_pack.raw_measurements_[2];
@@ -95,14 +101,16 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       float py = rho * sin(phi);
 
       ekf_.x_ << px, py, 0, 0;
+
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       /**
       Initialize state.
       */
       cout << "first measurement is LIDAR" << endl;
-      //Laser doesn't have velocity, only position?
-      //velocity is zero because it's the first measurement and we don't have another time value, right?
+
+      ekf_.Init(x_, P_, F_, H_laser_, R_laser_, Q_);
+
       ekf_.x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0;
     }
 
