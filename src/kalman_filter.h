@@ -28,7 +28,7 @@ public:
   Eigen::MatrixXd I_;
 
   // tools for normalizing
-  Tools::Tools tools;
+  Tools tools;
 
   /**
    * Constructor

@@ -28,7 +28,7 @@ public:
   /**
   * A helper method to normalize an angle between PI and -PI
   */
-  float NormalizeAngle(float angle){
+  float NormalizeAngle(float angle);
 };
 
 #endif /* TOOLS_H_ */
