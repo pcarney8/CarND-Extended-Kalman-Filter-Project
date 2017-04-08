@@ -63,7 +63,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 	//Check to make sure we don't divide by zero, if it's zero, set very small
 	cout << "before check for zero: " << sqrtpx2py2 << endl;
 	if ( sqrtpx2py2 == 0 ) {
-		sqrtpx2py2 = 0.00000001
+		sqrtpx2py2 = 0.00000001;
 	}
 	cout << "after check for zero: " << sqrtpx2py2 << endl;
 	
