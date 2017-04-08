@@ -65,7 +65,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     h << sqrtpx2py2, atan2(py,px), pxvxpyvy/sqrtpx2py2;
 
     cout << "update state using Extndend Kalman Filter equations" << endl;
-    MatrixXd y = z - h;
+    VectorXd y = z - h;
 
     //Normalize y[1]
     y[1] = tools.NormalizeAngle(y[1]);
