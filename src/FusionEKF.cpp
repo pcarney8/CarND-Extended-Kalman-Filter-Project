@@ -86,9 +86,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       Convert radar from polar to cartesian coordinates and initialize state.
       */
       cout << "first measurement is RADAR" << endl;
-      float rho = measurement_pack[0];
-      float phi = measurement_pack[1];
-      float rho_dot = measurement_pack[2];
+      float rho = measurement_pack.raw_measurements_[0];
+      float phi = measurement_pack.raw_measurements_[1];
+      float rho_dot = measurement_pack.raw_measurements_[2];
 
       cout << "convert to cartesian" << endl;
       float px = rho * cos(phi);
@@ -103,7 +103,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       cout << "first measurement is LIDAR" << endl;
       //Laser doesn't have velocity, only position?
       //velocity is zero because it's the first measurement and we don't have another time value, right?
-      ekf_.x_ << measurement_pack[0], measurement_pack[1], 0, 0;
+      ekf_.x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0;
     }
 
     cout << "px: " << ekf_.x_[0] << endl;
