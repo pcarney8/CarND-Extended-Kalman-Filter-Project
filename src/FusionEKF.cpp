@@ -32,22 +32,22 @@ FusionEKF::FusionEKF() {
         0, 0, 0.09;
 
   /**
-  TODO:
     * Finish initializing the FusionEKF.
     * Set the process and measurement noises
   */
   // create covariance matrices
-
   x_ = VectorXd(4);
   P_ = MatrixXd(4,4);
   F_ = MatrixXd(4,4);
   Q_ = MatrixXd(4,4);
 
+  //Initialize the F Matrix
   F_ << 1, 0, 1, 0,
 		0, 1, 0, 1,
 		0, 0, 1, 0,
 		0, 0, 0, 1;
-		
+
+  //Initialize the P matrix
   P_ << 1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1000, 0,
@@ -58,7 +58,6 @@ FusionEKF::FusionEKF() {
               0, 1, 0, 0;
 
   //Initialize the H jacobian
-  //TODO: VERIFY THAT 1'S ARE OK HERE
   Hj_ << 1, 1, 0, 0,
          1, 1, 0, 0,
          1, 1, 1, 1;
@@ -139,7 +138,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    ****************************************************************************/
 
   /**
-   TODO:
      * Update the state transition matrix F according to the new elapsed time.
       - Time is measured in seconds.
      * Update the process noise covariance matrix.
@@ -174,20 +172,12 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    ****************************************************************************/
 
   /**
-   TODO:
      * Use the sensor type to perform the update step.
      * Update the state and covariance matrices.
    */
 
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     cout << "Radar updates" << endl;
-    //TODO: DO I NEED TO CHANGE THE SIZE OF THESE FIRST?
-//    ekf_.R_ = MatrixXd(3, 3);
-//    ekf_.H_ = MatrixXd(3, 4);
-
-    //TODO: CHECK PX*PX + PY*PY CLOSE TO ZERO?
-    //doing this in the calculate jacobian method,
-    //does it need to be here too?
 
     Hj_ = tools.CalculateJacobian(ekf_.x_);
     ekf_.R_ = R_radar_;
