@@ -61,10 +61,13 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     float pxvxpyvy = px*vx + py*vy;
 
 	//Check to make sure we don't divide by zero, if it's zero, set very small
+	cout << "before check for zero: " << sqrtpx2py2 << endl;
 	if ( sqrtpx2py2 == 0 ) {
 		sqrtpx2py2 = 0.00000001
 	}
+	cout << "after check for zero: " << sqrtpx2py2 << endl;
 	
+	cout << "pxvxpyvy: " << pxvxpyvy << endl;
     cout << "Calculate h(x')" << endl;
     VectorXd h = VectorXd(3);
     h << sqrtpx2py2, atan2(py,px), pxvxpyvy/sqrtpx2py2;
