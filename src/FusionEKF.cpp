@@ -43,6 +43,16 @@ FusionEKF::FusionEKF() {
   F_ = MatrixXd(4,4);
   Q_ = MatrixXd(4,4);
 
+  F_ << 1, 0, 1, 0,
+		0, 1, 0, 1,
+		0, 0, 1, 0,
+		0, 0, 0, 1;
+		
+  P_ << 1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1000, 0,
+		0, 0, 0, 1000;
+		
   //Initialize the H matrix for laser
   H_laser_ << 1, 0, 0, 0,
               0, 1, 0, 0;
