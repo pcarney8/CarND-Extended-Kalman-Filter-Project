@@ -36,12 +36,12 @@ void KalmanFilter::Update(const VectorXd &z) {
   */
     cout << "Update..." << endl;
 
-    MatrixXd y = z - H_*x_;
-    MatrixXd H_t = H_.transpose();
-    MatrixXd S = H_*P_*H_t + R_;
-    MatrixXd K = P_*H_t*S.inverse();
-    x_ = x_ + (K*y);
-    P_ = (I_ - (K*H_))*P_;
+    MatrixXd y = z - H_*x_; //2x1
+    MatrixXd H_t = H_.transpose(); //4x2
+    MatrixXd S = H_*P_*H_t + R_; //2x2
+    MatrixXd K = P_*H_t*S.inverse(); //4x2
+    x_ = x_ + (K*y); //4x1
+    P_ = (I_ - (K*H_))*P_; //4x4
 
 }
 
