@@ -68,8 +68,10 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     VectorXd y = z - h;
 
     //Normalize y[1]
+    cout << "before normalize angle: " << y[1] << endl;
     y[1] = tools.NormalizeAngle(y[1]);
-
+    cout << "after normalize angle: " << y[1] << endl;
+  
     //H_ is Hj_ here
     MatrixXd H_t = H_.transpose();
     MatrixXd S = H_*P_*H_t + R_;

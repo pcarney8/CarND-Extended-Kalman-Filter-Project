@@ -21,8 +21,8 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 	//  * the estimation vector size should not be zero
 	//  * the estimation vector size should equal ground truth vector size
 	int estimationsSize = estimations.size();
- 	cout << "estimations size: " << estimationsSize << endl;
- 	cout << "ground truth size: " << ground_truth.size() << endl;
+// 	cout << "estimations size: " << estimationsSize << endl;
+// 	cout << "ground truth size: " << ground_truth.size() << endl;
 
 	if(estimationsSize == 0 || estimationsSize != ground_truth.size()){
 	    // should this return null? or just throw an error? or skip?
@@ -30,17 +30,17 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 	    return rmse;
 	}
 
-	cout << "accumulate squared residuals" << endl;
+//	cout << "accumulate squared residuals" << endl;
 	for(int i=0; i < estimationsSize; ++i){
         cout << "estimations[" << i << "]: " << estimations[i] << endl;
         cout << "ground_truth[" << i << "]: " << ground_truth[i] << endl;
 
         VectorXd residual = estimations[i] - ground_truth[i];
 
-        cout << "after sub, residual: " << residual << endl;
+//        cout << "after sub, residual: " << residual << endl;
 
         residual = residual.array().square();
-        cout << "after square, residual: " << residual << endl;
+//        cout << "after square, residual: " << residual << endl;
 
         // not compressing, apparently these are 4 measurments taken at the same time?
         // rmse[i] = residual.sum();
