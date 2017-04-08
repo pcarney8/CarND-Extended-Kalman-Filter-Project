@@ -40,7 +40,7 @@ void KalmanFilter::Update(const VectorXd &z) {
     MatrixXd S = H_*P_*H_t + R_;
     MatrixXd K = P_*H_t*S.inverse();
     x_ = x_ + (K*y);
-    P_ = (I - (K*H_))*P_;
+    P_ = (I_ - (K*H_))*P_;
 
 }
 
@@ -61,13 +61,13 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 
     cout << "Calculate h(x')" << endl;
     VectorXd h = VectorXd(3);
-    h << sqrtpx2py2, atan2(py/px), pxvxpyvy/sqrtpx2py2;
+    h << sqrtpx2py2, atan2(py,px), pxvxpyvy/sqrtpx2py2;
 
     cout << "update state using Extndend Kalman Filter equations" << endl;
     MatrixXd y = z - h;
 
     //Normalize y[1]
-    y[1] = tools.NormalizeAngle(y[1])
+    y[1] = tools.NormalizeAngle(y[1]);
 
     //H_ is Hj_ here
     MatrixXd H_t = H_.transpose();
@@ -75,5 +75,5 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     MatrixXd K = P_*H_t*S.inverse();
 
     x_ = x_ + (K*y);
-    P_ = (I - (K*H_))*P_;
+    P_ = (I_ - (K*H_))*P_;
 }
