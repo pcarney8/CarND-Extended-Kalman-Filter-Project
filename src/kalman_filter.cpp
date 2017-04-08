@@ -64,14 +64,16 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     VectorXd h = VectorXd(3);
     h << sqrtpx2py2, atan2(py,px), pxvxpyvy/sqrtpx2py2;
 
-    cout << "update state using Extndend Kalman Filter equations" << endl;
+    cout << "update state using Extended Kalman Filter equations" << endl;
     VectorXd y = z - h;
 
     //Normalize y[1]
-    cout << "before normalize angle: " << y[1] << endl;
-    y[1] = tools.NormalizeAngle(y[1]);
-    cout << "after normalize angle: " << y[1] << endl;
-  
+	if ( y[1] != 0 ) {
+		cout << "before normalize angle: " << y[1] << endl;
+		y[1] = tools.NormalizeAngle(y[1]);
+		cout << "after normalize angle: " << y[1] << endl;
+	}
+	
     //H_ is Hj_ here
     MatrixXd H_t = H_.transpose();
     MatrixXd S = H_*P_*H_t + R_;
