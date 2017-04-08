@@ -26,7 +26,7 @@ void KalmanFilter::Predict() {
     * predict the state
   */
     cout << "Predict..." << endl;
-    x_ = (F_*x_);
+    x_ = F_*x_;
     P_ = F_*P_*F_.transpose() + Q_;
 }
 
